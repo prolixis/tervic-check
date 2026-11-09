@@ -8,3 +8,4 @@ You can test the scanner locally against the provided sample workflow:
 
 ```bash
 node bin/tervic-check.js examples/sample_workflow.json
+```
