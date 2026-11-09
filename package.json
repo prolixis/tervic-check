@@ -5,6 +5,9 @@
   "bin": {
     "tervic-check": "./bin/tervic-check.js"
   },
+  "scripts": {
+    "test": "node tests/run.js"
+  },
   "engines": {
     "node": ">=16.0.0"
   },

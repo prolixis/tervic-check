@@ -1,0 +1,44 @@
+{
+  "name": "tervic-check-sdk",
+  "version": "0.1.0",
+  "description": "JavaScript SDK for importing, exporting, and scanning n8n workflow JSON.",
+  "main": "index.js",
+  "module": "index.mjs",
+  "types": "index.d.ts",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "lib/",
+    "test/live-n8n.js",
+    "README.md",
+    "examples/"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "test:live": "node test/live-n8n.js",
+    "typecheck": "tsc --project tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "workflow",
+    "n8n",
+    "scanner",
+    "security",
+    "sdk"
+  ],
+  "license": "MIT"
+}
