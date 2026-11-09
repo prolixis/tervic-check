@@ -1,0 +1,44 @@
+name: SDK CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [16, 18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Run CLI and SDK tests
+        run: npm test
+      - name: Check CommonJS and ESM package entry points
+        working-directory: sdk
+        run: |
+          node -e "const sdk = require('.'); if (!sdk.createN8nClient) process.exit(1)"
+          node --input-type=module -e "import('./index.mjs').then((sdk) => { if (!sdk.createN8nClient) process.exit(1) })"
+      - name: Verify package contents
+        working-directory: sdk
+        run: npm pack --dry-run
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install SDK development tools
+        working-directory: sdk
+        run: npm ci
+      - name: Check SDK declarations
+        working-directory: sdk
+        run: npm run typecheck

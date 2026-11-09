@@ -1,0 +1,32 @@
+name: SDK Release Artifact
+
+on:
+  push:
+    tags:
+      - "tervic-check-sdk-v*"
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install SDK development tools
+        working-directory: sdk
+        run: npm ci
+      - name: Verify SDK before packaging
+        run: npm test
+      - name: Type-check declarations
+        working-directory: sdk
+        run: npm run typecheck
+      - name: Create package archive
+        working-directory: sdk
+        run: npm pack
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tervic-check-sdk-${{ github.ref_name }}
+          path: sdk/*.tgz
+          if-no-files-found: error
