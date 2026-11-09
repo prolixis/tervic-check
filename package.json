@@ -1,0 +1,20 @@
+{
+  "name": "tervic-check",
+  "version": "0.2.0",
+  "description": "A lightweight workflow reliability scanner for automation JSON files.",
+  "bin": {
+    "tervic-check": "./bin/tervic-check.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "workflow",
+    "scanner",
+    "n8n",
+    "reliability",
+    "security"
+  ],
+  "author": "Ayush Kumar Singh",
+  "license": "MIT"
+}

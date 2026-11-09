@@ -1,0 +1,10 @@
+
+{
+  "name": "Broken Workflow",
+  "nodes": [
+    {
+      "id": "node-001",
+      "name": "Start"
+    }
+  ],
+}

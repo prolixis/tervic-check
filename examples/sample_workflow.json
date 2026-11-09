@@ -1,0 +1,36 @@
+
+
+{
+  "name": "Tervic Test Workflow",
+  "nodes": [
+    {
+      "id": "node-001",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "parameters": {}
+    },
+    {
+      "id": "node-002",
+      "name": "Process",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
