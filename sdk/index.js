@@ -26,7 +26,7 @@ function scanWorkflow(workflow, options = {}) {
     }
 
     const platform = options.platform === undefined ? "n8n" : options.platform;
-    return runChecks(workflow, platform);
+    return runChecks(workflow, platform, options);
 }
 
 module.exports = {
