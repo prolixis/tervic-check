@@ -1,0 +1,6 @@
+{
+  "description": "Recorded model answers replayed offline by FakeListChatModel.",
+  "responses": [
+    "Tervic records every step of an AI agent run and fails CI when a step silently broke."
+  ]
+}

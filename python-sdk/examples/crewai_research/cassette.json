@@ -1,0 +1,10 @@
+{
+  "description": "Recorded model replies (ReAct format) replayed offline.",
+  "looping": [
+    "Thought: I need more information.\nAction: web_search\nAction Input: {\"query\": \"tervic\"}"
+  ],
+  "answering": [
+    "Thought: I should look it up.\nAction: web_search\nAction Input: {\"query\": \"tervic\"}",
+    "Thought: I now know the final answer.\nFinal Answer: Tervic is an open-source SDK that finds the step of an AI agent that silently broke."
+  ]
+}

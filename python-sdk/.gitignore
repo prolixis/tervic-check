@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.tervic/
+!examples/**/.tervic/baselines/
+dist/
+build/
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/

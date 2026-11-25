@@ -1,0 +1,4 @@
+{
+  "description": "Recorded model reply template replayed offline.",
+  "reply": "Hi {name}, your invoice for the {plan} plan is attached to your account page."
+}

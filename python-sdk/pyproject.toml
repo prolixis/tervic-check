@@ -1,0 +1,124 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tervic"
+dynamic = ["version"]
+description = "Find which step of your AI agent silently broke, and stop it from shipping."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Prolixis" }]
+keywords = ["ai", "agents", "llm", "langgraph", "crewai", "openai-agents", "testing", "observability", "ci"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+    "Framework :: Pytest",
+]
+dependencies = [
+    "pydantic>=2.6",
+    "typer>=0.12",
+    "rich>=13.7",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+langgraph = ["langgraph>=0.2", "langchain-core>=0.3"]
+openai-agents = ["openai-agents>=0.2"]
+crewai = ["crewai>=0.100"]
+otel = ["opentelemetry-api>=1.25", "opentelemetry-sdk>=1.25"]
+mcp = ["mcp>=1.2"]
+judge = ["keyring>=24"]
+all = [
+    "tervic[langgraph]",
+    "tervic[openai-agents]",
+    "tervic[crewai]",
+    "tervic[otel]",
+    "tervic[mcp]",
+    "tervic[judge]",
+]
+
+[project.urls]
+Homepage = "https://github.com/prolixis/tervic"
+Documentation = "https://github.com/prolixis/tervic/tree/main/docs"
+Issues = "https://github.com/prolixis/tervic/issues"
+Changelog = "https://github.com/prolixis/tervic/blob/main/CHANGELOG.md"
+
+[project.scripts]
+tervic = "tervic.cli:main"
+
+[project.entry-points.pytest11]
+tervic = "tervic.pytest_plugin"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "jsonschema>=4.21",
+]
+
+[tool.hatch.version]
+path = "src/tervic/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tervic"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/tervic", "README.md", "LICENSE", "CHANGELOG.md", "docs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "examples"]
+asyncio_mode = "auto"
+addopts = "-p no:cacheprovider --import-mode=importlib"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning:.*(langchain|crewai|pydantic|opentelemetry).*"]
+
+[tool.coverage.run]
+source = ["tervic"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError", "\\.\\.\\."]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PL", "C4", "PIE", "RET"]
+ignore = ["PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLC0415", "PLR0917", "PLW0603", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR", "B011", "RUF012", "PLW0603"]
+"examples/**" = ["PLR"]
+"src/tervic/report/html.py" = ["E501"]
+"src/tervic/analyze/detectors/*" = ["E501"]
+"src/tervic/analyze/judge.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/tervic"]
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["langgraph.*", "langchain_core.*", "agents.*", "crewai.*", "opentelemetry.*", "mcp.*", "keyring.*", "openai.*", "anthropic.*", "google.*"]
+ignore_missing_imports = true
