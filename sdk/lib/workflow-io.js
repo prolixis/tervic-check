@@ -4,7 +4,7 @@ const fs = require("node:fs/promises");
 const { createReadStream } = require("node:fs");
 const path = require("node:path");
 const { randomUUID } = require("node:crypto");
-const { StringDecoder } = require("node:string_decoder");
+const { TextDecoder } = require("node:util");
 const { runChecks } = require("./engine");
 const { TervicSdkError } = require("./errors");
 const DEFAULT_MAX_FILE_BYTES = 50 * 1024 * 1024;
@@ -47,7 +47,8 @@ function parseWorkflow(json) {
     }
 
     try {
-        return JSON.parse(json);
+        const source = json.charCodeAt(0) === 0xFEFF ? json.slice(1) : json;
+        return JSON.parse(source);
     } catch (error) {
         throw new TervicSdkError(
             "Invalid workflow JSON.",
@@ -59,7 +60,7 @@ function parseWorkflow(json) {
 
 async function readFileWithLimit(filePath, maxFileBytes) {
     const stream = createReadStream(filePath);
-    const decoder = new StringDecoder("utf8");
+    const decoder = new TextDecoder("utf-8", { fatal: true });
     let bytes = 0;
     let contents = "";
 
@@ -73,10 +74,27 @@ async function readFileWithLimit(filePath, maxFileBytes) {
             );
         }
 
-        contents += decoder.write(chunk);
+        try {
+            contents += decoder.decode(chunk, { stream: true });
+        } catch (error) {
+            stream.destroy();
+            throw new TervicSdkError(
+                "Workflow file is not valid UTF-8.",
+                "ERR_TERVIC_INVALID_JSON",
+                error
+            );
+        }
     }
 
-    return contents + decoder.end();
+    try {
+        return contents + decoder.decode();
+    } catch (error) {
+        throw new TervicSdkError(
+            "Workflow file is not valid UTF-8.",
+            "ERR_TERVIC_INVALID_JSON",
+            error
+        );
+    }
 }
 
 async function importWorkflow(filePath, options = {}) {
@@ -96,7 +114,8 @@ async function importWorkflow(filePath, options = {}) {
     try {
         contents = await readFileWithLimit(filePath, maxFileBytes);
     } catch (error) {
-        if (error.code === "ERR_TERVIC_FILE_TOO_LARGE") {
+        if (error.code === "ERR_TERVIC_FILE_TOO_LARGE" ||
+            error.code === "ERR_TERVIC_INVALID_JSON") {
             throw error;
         }
         throw new TervicSdkError(
@@ -202,7 +221,7 @@ async function scanWorkflowFile(filePath, options = {}) {
     const workflow = await importWorkflow(filePath, {
         maxFileBytes: options.maxFileBytes
     });
-    return runChecks(workflow, options.platform === undefined ? "n8n" : options.platform);
+    return runChecks(workflow, options.platform === undefined ? "n8n" : options.platform, options);
 }
 
 module.exports = {

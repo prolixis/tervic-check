@@ -1,12 +1,13 @@
 {
-  "name": "tervic-check",
-  "version": "0.2.0",
+  "name": "tervic-Flowcheck",
+  "version": "0.1.0",
   "description": "A lightweight workflow reliability scanner for automation JSON files.",
   "bin": {
     "tervic-check": "./bin/tervic-check.js"
   },
   "scripts": {
-    "test": "node tests/run.js"
+    "test": "node tests/run.js",
+    "start": "npm --prefix backend start"
   },
   "engines": {
     "node": ">=16.0.0"

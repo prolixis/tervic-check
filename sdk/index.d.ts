@@ -4,19 +4,62 @@ export type Workflow = { [key: string]: JsonValue };
 
 export interface Finding {
   ruleId: string;
-  severity: string;
+  severity: "error" | "warning";
+  title: string;
   message: string;
+  nodeId: string | null;
+  nodeName: string | null;
+  recommendation: string;
   location: string;
+  certainty: "confirmed" | "heuristic";
 }
 
 export interface ScanResult {
   platform: string;
+  scannerVersion: string;
   totalFindings: number;
   findings: Finding[];
+  workflowMetrics: {
+    nodeCount: number | null;
+    connectionCount: number | null;
+  };
+  checkSummary: {
+    totalChecks: number;
+    checksExecuted: number;
+    checksPassed: number;
+    checksSkipped: number;
+    checks: Array<{
+      ruleId: string;
+      status: "passed" | "finding" | "failed" | "skipped";
+    }>;
+  };
+  analysisCoverage: {
+    dataFlow: {
+      status: "partial";
+      supportedNodeTypes: string[];
+      message: string;
+    };
+  };
 }
 
 export interface ScanOptions {
   platform?: string;
+  enabledRules?: string[];
+  disabledRules?: string[];
+  limits?: ScanLimits;
+}
+
+export interface ScanLimits {
+  maxNodes?: number;
+  maxConnections?: number;
+  maxDepth?: number;
+  maxValues?: number;
+  maxFindings?: number;
+}
+
+export interface SecretScanOptions {
+  maxDepth?: number;
+  maxValues?: number;
 }
 
 export interface ScanFileOptions extends ScanOptions {
@@ -107,5 +150,12 @@ export function scanWorkflowFile(
   filePath: string,
   options?: ScanFileOptions
 ): Promise<ScanResult>;
-export function validateN8n(workflow: unknown): Finding[];
-export function scanForSecrets(value: unknown, location?: string): Finding[];
+export function validateN8n(
+  workflow: unknown,
+  limits?: Pick<ScanLimits, "maxNodes" | "maxConnections">
+): Finding[];
+export function scanForSecrets(
+  value: unknown,
+  location?: string,
+  options?: SecretScanOptions
+): Finding[];
